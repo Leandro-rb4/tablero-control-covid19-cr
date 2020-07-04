@@ -7,6 +7,16 @@ output:
     source_code: embed
     vertical_layout: fill    
 ---
+<style>                     
+.navbar {
+  background-color:grey;
+  border-color:black;
+}
+
+
+
+</style> 
+
 
 ```{r setup, include=FALSE}
 
@@ -21,29 +31,32 @@ library(leaflet)
 
 #-------------------- Colores ---------------------
 
-color_positivos <- 'blue'
+color_positivos <- 'orange'
 color_activos <- 'red'
 color_recuperados <- 'green'
-color_fallecidos <- 'purple'
+color_fallecidos <- 'grey'
 
-color_nuevos_positivos <- 'pink'
+color_nuevos_positivos <- 'yellow'
 
-color_hospitalizados <- 'pink'
-color_salon <- 'pink'
-color_uci <- 'pink'
+color_hospitalizados <- 'lightblue'
+color_salon <- 'lightblue'
+color_uci <- 'lightblue'
 
 #--------------------- Íconos ---------------------
 
-icono_positivos <- 'fas fa-user-md'
-icono_activos <- 'fas fa-user-md'
-icono_recuperados <- 'fas fa-user-md'
-icono_fallecidos <- 'fas fa-user-md'
+icono_positivos <- 'fa-certificate'
 
-icono_nuevos_positivos <- 'fas fa-user-md'
+icono_activos <- 'fa-exclamation-triangle'
 
-icono_hospitalizados <- 'fas fa-user-md'
-icono_salon <- 'fas fa-user-md'
-icono_uci <- 'fas fa-user-md'
+icono_recuperados <- 'fa-heart'
+
+icono_fallecidos <- ' fa-minus-circle'
+
+icono_nuevos_positivos <- 'fa-plus-square'
+
+icono_hospitalizados <- 'fa-hospital-o'
+icono_salon <- 'fa-stethoscope'
+icono_uci <- 'fa-bed'
 
 #--------------- Otros parámetros -----------------
 
@@ -173,7 +186,7 @@ valueBox(value = paste(format(df_general_pais_ultima_fecha$activos, big.mark = "
                        round(100 * df_general_pais_ultima_fecha$activos / df_general_pais_ultima_fecha$positivos, 1), 
                        "%)", sep = ""), 
          caption = "Total de casos activos",
-         icon = icono_positivos, 
+         icon = icono_activos, 
          color = color_activos
 )
 ```
@@ -184,7 +197,7 @@ valueBox(value = paste(format(df_general_pais_ultima_fecha$RECUPERADOS, big.mark
                        round(100 * df_general_pais_ultima_fecha$RECUPERADOS / df_general_pais_ultima_fecha$positivos, 1), 
                        "%)", sep = ""), 
          caption = "Total de casos recuperados",
-         icon = icono_positivos, 
+         icon = icono_recuperados, 
          color = color_recuperados
 )
 ```
@@ -195,7 +208,7 @@ valueBox(value = paste(format(df_general_pais_ultima_fecha$fallecidos, big.mark 
                        round(100 * df_general_pais_ultima_fecha$fallecidos / df_general_pais_ultima_fecha$positivos, 1), 
                        "%)", sep = ""), 
          caption = "Total de casos fallecidos",
-         icon = icono_positivos, 
+         icon = icono_fallecidos, 
          color = color_fallecidos
 )
 ```
@@ -301,7 +314,7 @@ Row {data-width=400}
 ### Mapa de casos positivos en cantones
 ```{r}
 
-paleta_azul <- colorBin(palette = "Blues", 
+paleta_naranja <- colorBin(palette = "Oranges", 
                         domain = sf_positivos_cantones_ultima_fecha$positivos,
                         bins = 10
                )
@@ -309,7 +322,7 @@ paleta_azul <- colorBin(palette = "Blues",
 leaflet_cantones <- leaflet(sf_positivos_cantones_ultima_fecha) %>% 
   fitBounds(lng1 = -86, lng2 = -82, lat1 = 8, lat2 = 11) %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
-  addPolygons(fillColor = ~paleta_azul(positivos), stroke=T, fillOpacity = 1,
+  addPolygons(fillColor = ~paleta_naranja(positivos), stroke=T, fillOpacity = 1,
               color="black", weight=0.2, opacity= 0.5,
               group = "Cantones",
               popup = paste("Provincia: ", sf_positivos_cantones_ultima_fecha$provincia, "<br>",
@@ -317,7 +330,7 @@ leaflet_cantones <- leaflet(sf_positivos_cantones_ultima_fecha) %>%
                             "Positivos: ", sf_positivos_cantones_ultima_fecha$positivos
                             )
   ) %>%
-  addLegend("bottomright", pal = paleta_azul, values = ~positivos,
+  addLegend("bottomright", pal = paleta_naranja, values = ~positivos,
     title = "Casos positivos",
     opacity = 1
   ) %>%  
@@ -349,7 +362,7 @@ plot_ly(x = ~ canton,
         marker = list(color = color_positivos)
 ) %>%
 layout(yaxis = list(title = "Cantidad de casos positivos"),
-       xaxis = list(title = ""),
+       xaxis = list(title = "Cantones"),
        margin = list(l = 10,
                      r = 10,
                      b = 10,
