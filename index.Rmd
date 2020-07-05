@@ -1,5 +1,5 @@
 ---
-title: "Estado del COVID-19 en Costa Rica (Por Leandro Rodríguez)"
+title: "Estado del COVID-19 en Costa Rica (Por Leandro Rodríguez B.)"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
