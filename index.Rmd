@@ -364,6 +364,58 @@ valueBox(value = paste(format(df_general_pais_ultima_fecha$positivos, big.mark =
 )
 ```
 
+### Casos de mujeres
+```{r}
+valueBox(value = paste(format(df_general_pais_ultima_fecha$muj_posi, big.mark = ","), "", sep = " "), 
+         caption = "Total de casos positivos de mujeres", 
+         icon = icono_positivos, 
+         color = color_positivos
+)
+```
+
+
+### Casos de hombres
+```{r}
+valueBox(value = paste(format(df_general_pais_ultima_fecha$hom_posi, big.mark = ","), "", sep = " "), 
+         caption = "Total de casos positivos de hombres", 
+         icon = icono_positivos, 
+         color = color_positivos
+)
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Casos de adultos
+```{r}
+valueBox(value = paste(format(df_general_pais_ultima_fecha$adul_posi, big.mark = ","), "", sep = " "), 
+         caption = "Total de casos positivos de adultos", 
+         icon = icono_positivos, 
+         color = color_positivos
+)
+```
+
+
+### Casos de adultos mayores
+```{r}
+valueBox(value = paste(format(df_general_pais_ultima_fecha$am_posi, big.mark = ","), "", sep = " "), 
+         caption = "Total de casos positivos de adultos mayores", 
+         icon = icono_positivos, 
+         color = color_positivos
+)
+```
+
+
+### Casos de menores
+```{r}
+valueBox(value = paste(format(df_general_pais_ultima_fecha$menor_posi, big.mark = ","), "", sep = " "), 
+         caption = "Total de casos positivos de menores", 
+         icon = icono_positivos, 
+         color = color_positivos
+)
+```
+
+
 Row {data-width=400}
 -----------------------------------------------------------------------
 
