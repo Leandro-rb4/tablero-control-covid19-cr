@@ -966,7 +966,6 @@ Row {data-height=10}
 leaflet() %>%
   fitBounds(lng1 = -86, lng2 = -82, lat1 = 8, lat2 = 11) %>%
   addProviderTiles(providers$CartoDB.DarkMatter, group = "CartoDB.Dark") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
   addHeatmap(data = sf_centroidesdistritos_ultima_fecha, 
              intensity= sf_centroidesdistritos_ultima_fecha$activos,
              radius = 15, blur =25, max = 70)%>%
