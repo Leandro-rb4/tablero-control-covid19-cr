@@ -1,5 +1,5 @@
 ---
-title: "Estado del COVID-19 en Costa Rica (Por Leandro Rodríguez B.)"
+title: "Estado del COVID-19 en Costa Rica (Por Leandro Rodríguez, David Aguilar y Luis Vega)"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -9,7 +9,7 @@ output:
 ---
 <style>                     
 .navbar {
-  background-color:lightblue;
+  background-color:grey;
   border-color:black;
 }
 
@@ -28,19 +28,21 @@ library(dplyr)
 library(tidyr)
 library(sf)
 library(leaflet)
-
+library(dygraphs)
+library(ggplot2)
+library(leaflet.extras)
 #-------------------- Colores ---------------------
 
-color_positivos <- 'darkred'
+color_positivos <- 'orange'
 color_activos <- 'red'
 color_recuperados <- 'lightgreen'
-color_fallecidos <- 'darkblue'
+color_fallecidos <- 'purple'
 
 color_nuevos_positivos <- 'yellow'
 
-color_hospitalizados <- 'grey'
-color_salon <- 'grey'
-color_uci <- 'grey'
+color_hospitalizados <- 'lightblue'
+color_salon <- 'lightblue'
+color_uci <- 'lightblue'
 
 #--------------------- Íconos ---------------------
 
@@ -222,6 +224,12 @@ sf_distritos <- st_read('https://raw.githubusercontent.com/geoprocesamiento-2020
 sf_general_distritos_ultima_fecha <-
   left_join(sf_distritos, df_general_distritos_ultima_fecha, by = c('provincia', 'canton', 'distrito'))
 
+sf_distritos <- st_read('https://raw.githubusercontent.com/geoprocesamiento-2020i/datos/master/delimitacion-territorial-administrativa/cr/ign/cr_limite_distrital_ign_wgs84.geojson')
+
+centroidesdistritos <- st_centroid(sf_distritos)
+sf_centroidesdistritos_ultima_fecha <-
+  left_join( centroidesdistritos, df_general_distritos_ultima_fecha, centroidesdistritos, by = c('distrito'))  %>%
+  arrange(desc(activos))
 
 ```
 
@@ -443,7 +451,7 @@ Row {data-width=400}
 ### Mapa de casos positivos en cantones
 ```{r}
 
-paleta_vino <- colorBin(palette = "Reds", 
+paleta_orange <- colorBin(palette = "Oranges", 
                         domain = sf_positivos_cantones_ultima_fecha$positivos,
                         bins = 10
                )
@@ -451,7 +459,7 @@ paleta_vino <- colorBin(palette = "Reds",
 leaflet_cantones <- leaflet(sf_positivos_cantones_ultima_fecha) %>% 
   fitBounds(lng1 = -86, lng2 = -82, lat1 = 8, lat2 = 11) %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
-  addPolygons(fillColor = ~paleta_vino(positivos), stroke=T, fillOpacity = 1,
+  addPolygons(fillColor = ~paleta_orange(positivos), stroke=T, fillOpacity = 1,
               color="black", weight=0.2, opacity= 0.5,
               group = "Cantones",
               popup = paste("Provincia: ", sf_positivos_cantones_ultima_fecha$provincia, "<br>",
@@ -459,7 +467,7 @@ leaflet_cantones <- leaflet(sf_positivos_cantones_ultima_fecha) %>%
                             "Positivos: ", sf_positivos_cantones_ultima_fecha$positivos
                             )
   ) %>%
-  addLegend("bottomright", pal = paleta_vino, values = ~positivos,
+  addLegend("bottomright", pal = paleta_orange, values = ~positivos,
     title = "Casos positivos",
     opacity = 1
   ) %>%  
@@ -888,7 +896,7 @@ Row {data-width=400}
 ### Mapa de casos fallecidos en cantones
 ```{r}
 
-paleta_azul <- colorBin(palette = "Blues", 
+paleta_mor <- colorBin(palette = "Purples", 
                         domain = sf_fallecidos_cantones_ultima_fecha$fallecidos,
                         bins = 10
                )
@@ -896,7 +904,7 @@ paleta_azul <- colorBin(palette = "Blues",
 leaflet_cantones3 <- leaflet(sf_fallecidos_cantones_ultima_fecha) %>% 
   fitBounds(lng1 = -86, lng2 = -82, lat1 = 8, lat2 = 11) %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
-  addPolygons(fillColor = ~paleta_azul(fallecidos), stroke=T, fillOpacity = 1,
+  addPolygons(fillColor = ~paleta_mor(fallecidos), stroke=T, fillOpacity = 1,
               color="black", weight=0.2, opacity= 0.5,
               group = "Cantones",
               popup = paste("Provincia: ", sf_fallecidos_cantones_ultima_fecha$provincia, "<br>",
@@ -904,7 +912,7 @@ leaflet_cantones3 <- leaflet(sf_fallecidos_cantones_ultima_fecha) %>%
                             "Positivos: ", sf_fallecidos_cantones_ultima_fecha$fallecidos
                             )
   ) %>%
- addLegend("bottomright", pal = paleta_azul, values = ~fallecidos,
+ addLegend("bottomright", pal = paleta_mor, values = ~fallecidos,
     title = "Casos fallecidos",
     opacity = 1
   ) %>%  
@@ -952,4 +960,22 @@ Casos en distritos
 Row {data-height=10}
 -----------------------------------------------------------------------
 ### **Última actualización de datos realizada el `r  df_general_pais_ultima_fecha$FECHA` con base en los [datos publicados por el Ministerio de Salud de Costa Rica](http://geovision.uned.ac.cr/oges/)**.
+
+```{r}
+
+leaflet() %>%
+  fitBounds(lng1 = -86, lng2 = -82, lat1 = 8, lat2 = 11) %>%
+  addProviderTiles(providers$CartoDB.DarkMatter, group = "CartoDB.Dark") %>%
+  addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
+  addHeatmap(data = sf_centroidesdistritos_ultima_fecha, 
+             intensity= sf_centroidesdistritos_ultima_fecha$activos,
+             radius = 15, blur =25, max = 70)%>%
+  addLayersControl(baseGroups = c("CartoDB.Dark"))%>%  
+  addMiniMap(
+    toggleDisplay = TRUE,
+    position = "bottomright",
+    tiles = providers$penStreetMap.Mapnik
+  ) 
+
+```
 
